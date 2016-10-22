@@ -24,7 +24,7 @@ const sketch = (p) => {
       sun.mass = 50
       sun.setSpeed(p.random(1, 2), p.random(0, 360))
       sun.setCollider('circle', 0, 0, 70)
-
+      sun.maxSpeed = 10
       let gravity = p.createSprite(sun.position.x, sun.position.y)
       gravity.draw = () => {
         gravity.position.x = sun.position.x
@@ -58,9 +58,9 @@ const sketch = (p) => {
   }
   //主角移动
   let heroUpdate = () => {
-    hero.scale /= 1.002
     hero.velocity.x = (p.camera.mouseX - hero.position.x) / 20
     hero.velocity.y = (p.camera.mouseY - hero.position.y) / 20
+
   }
 
   p.setup = () => {
@@ -78,7 +78,7 @@ const sketch = (p) => {
       circle.setSpeed(p.random(1, 3), p.random(0, 360))
       circle.scale = p.random(0.1, 0.2)
       circle.mass = circle.scale
-      circle.maxSpeed = 6
+      circle.maxSpeed = 5
       circles.add(circle)
       allSprites.push(circle)
     }
@@ -115,13 +115,15 @@ const sketch = (p) => {
       if (clctor.scale < 2) {
         clctor.scale += clcted.scale / 20 / clctor.scale
       }
-      if (clcted.scale <= clctor.scale / 15) {
+      if (clcted.scale <= clctor.scale / 15 * clctor.scale) {
+        clcted.scale -= clctor.scale / 15 * clctor.scale
         clcted.remove()
       } else {
         clcted.scale -= clctor.scale / 15 * clctor.scale
       }
     } else {
-      if (clctor.scale <= clcted.scale / 15) {
+      if (clctor.scale <= clcted.scale / 15 * clcted.scale) {
+        clctor.scale -= clcted.scale / 15 * clcted.scale
         clctor.remove()
       } else {
         clctor.scale -= clcted.scale / 15 * clcted.scale
@@ -140,12 +142,12 @@ const sketch = (p) => {
   p.draw = () => {
     p.background(255, 255, 255)
 
-    if (p.random(0, 100) <= 10) {
+    if (p.random(0, 100) <= 15) {
       let circle = p.createSprite(p.random(0, p.width), p.random(0, p.height))
       circle.addAnimation('normal', 'assets/asterisk_circle0006.png', 'assets/asterisk_circle0008.png')
       circle.setCollider('circle', -2, 2, 55)
       circle.setSpeed(p.random(2, 3), p.random(0, 360))
-      circle.scale = p.random(0.1, 0.5)
+      circle.scale = p.random(0.2, 0.5)
       circle.mass = circle.scale
       circles.add(circle)
       allSprites.push(circle)
@@ -210,7 +212,20 @@ const sketch = (p) => {
       hero.position.y = SCENEH
 
     heroUpdate()
-
+    if (!hero || hero.scale <= 0.01) {
+      p.background(255, 255, 255, 50)
+      p.textSize(100)
+      p.fill(0, 102, 153)
+      p.text('You Lose', p.camera.position.x - 200, p.camera.position.y - 200)
+      // p.noLoop()
+    }
+    if (hero && hero.scale >= 1.98) {
+      p.background(255, 255, 255, 50)
+      p.textSize(100)
+      p.fill(0, 102, 153)
+      p.text('You Win!', p.camera.position.x - 200, p.camera.position.y - 200)
+      // p.noLoop()
+    }
     p.drawSprites()
   }
 
