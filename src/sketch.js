@@ -79,10 +79,10 @@ const sketch = (p) => {
     }
     //添加加速泡泡
     bubblys = new p.Group()
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       let bubbly = p.createSprite(p.random(SCENEW / 10, SCENEW * 9 / 10), p.random(SCENEH / 10, SCENEH * 9 / 10))
       bubbly.addAnimation('normal', 'assets/bubbly0001.png', 'assets/bubbly0004.png')
-      bubbly.setCollider('rectangle', 0, 0, 80, 120)
+      bubbly.setCollider('rectangle', 0, 0, 80, 140)
       bubblys.add(bubbly)
       if (i % 2 == 0)
         bubbly.rotation = 90
@@ -180,7 +180,6 @@ const sketch = (p) => {
     p.camera.position.x = hero.position.x
     p.camera.position.y = hero.position.y
 
-    //limit the hero movements
     if (hero.position.x < 0)
       hero.position.x = 0
     if (hero.position.y < 0)

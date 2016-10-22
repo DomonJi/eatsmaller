@@ -2,6 +2,10 @@
 
 ## v0.0.1 made with p5.js
 
+## 在线展示
+
+<https://domonji.github.io/eatsmaller>
+
 ## 游戏截图
 
 ![游戏截图](intro_src/EDD220E1-33C7-4326-9D22-E997C6CC6E31.png)
