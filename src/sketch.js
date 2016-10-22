@@ -22,7 +22,6 @@ const sketch = (p) => {
     gravity = p.createSprite(sun.position.x, sun.position.y)
     gravity.draw = () => {}
     gravity.setCollider('circle', 0, 0, 700, 700)
-    gravity.debug = true
     allSprites.push(sun)
   }
   //初始化主角

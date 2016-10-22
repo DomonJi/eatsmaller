@@ -1,10 +1,8 @@
-
-var path = require('path');
-
+var path = require('path')
+var webpack = require('webpack')
 module.exports = {
   entry: [
-    'babel-polyfill',
-    './src/sketch'
+    'babel-polyfill', './src/sketch'
   ],
   output: {
     path: __dirname + '/dist',
@@ -18,9 +16,7 @@ module.exports = {
         loader: 'babel-loader',
 
         // Skip any files outside of your project's `src` directory
-        include: [
-          path.resolve(__dirname, 'src')
-        ],
+        include: [path.resolve(__dirname, 'src')],
 
         // Only run `.js` and `.jsx` files through Babel
         test: /\.jsx?$/,
@@ -31,5 +27,13 @@ module.exports = {
         }
       }
     ]
-  }
-};
+  },
+  plugins: [new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      },
+      output: {
+        comments: false
+      }
+    })]
+}
