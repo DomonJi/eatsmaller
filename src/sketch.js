@@ -145,7 +145,7 @@ const sketch = (p) => {
     })
     bubblys.collide(boxes)
     boxes.collide(boxes)
-    circles.collide(sun)
+    circles.displace(sun)
     circles.overlap(gravity, gravityEffect)
     sun.displace(boxes)
     sun.displace(bubblys)
