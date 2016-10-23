@@ -12,6 +12,8 @@ const sketch = (p) => {
   let gravities
   let canControl = true
   let controtimeout
+  let holes
+  // let antigravities
   const SCENEW = 2560
   const SCENEH = 1440
   //初始化太阳
@@ -22,7 +24,7 @@ const sketch = (p) => {
       let sun = p.createSprite(p.random(SCENEW / 6, SCENEW * 5 / 6), p.random(SCENEH / 6, SCENEH * 5 / 6))
       sun.addAnimation('glow', 'assets/sun1.png', 'assets/sun3.png')
       sun.mass = 50
-      sun.setSpeed(p.random(1, 2), p.random(0, 360))
+      sun.setSpeed(p.random(0, 1), p.random(0, 360))
       sun.setCollider('circle', 0, 0, 70)
       sun.maxSpeed = 10
       let gravity = p.createSprite(sun.position.x, sun.position.y)
@@ -37,6 +39,20 @@ const sketch = (p) => {
       suns.add(sun)
       gravities.add(gravity)
       allSprites.push(sun)
+    }
+  }
+  let initHoles = () => {
+    holes = new p.Group()
+    // antigravities = new p.Group()
+    for (let i = 0; i < 30; i++) {
+      let hole = p.createSprite(p.random(0, SCENEW), p.random(0, SCENEH))
+      hole.addAnimation('glow', 'assets/cloud_breathing0001.png', 'assets/cloud_breathing0009.png')
+      hole.setSpeed(p.random(1, 2), p.random(0, 360))
+      hole.scale = p.random(0.4, 1.3)
+      hole.mass = hole.scale
+      hole.maxSpeed = 5
+      holes.add(hole)
+      allSprites.push(hole)
     }
   }
   //初始化主角
@@ -60,7 +76,6 @@ const sketch = (p) => {
   let heroUpdate = () => {
     hero.velocity.x = (p.camera.mouseX - hero.position.x) / 20
     hero.velocity.y = (p.camera.mouseY - hero.position.y) / 20
-
   }
 
   p.setup = () => {
@@ -71,12 +86,12 @@ const sketch = (p) => {
     border.draw = () => {}
     circles = new p.Group()
     //添加圆形
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 80; i++) {
       let circle = p.createSprite(p.random(0, p.width), p.random(0, p.height))
       circle.addAnimation('normal', 'assets/asterisk_circle0006.png', 'assets/asterisk_circle0008.png')
       circle.setCollider('circle', -2, 2, 55)
       circle.setSpeed(p.random(1, 3), p.random(0, 360))
-      circle.scale = p.random(0.1, 0.2)
+      circle.scale = p.random(0.1, 0.8)
       circle.mass = circle.scale
       circle.maxSpeed = 5
       circles.add(circle)
@@ -105,6 +120,7 @@ const sketch = (p) => {
       allSprites.push(bubbly)
     }
     initSun()
+    initHoles()
     initHero()
   }
   //游戏机制
@@ -113,7 +129,7 @@ const sketch = (p) => {
     clcted.velocity.y += clctor.velocity.y / 10
     if (clctor.scale >= clcted.scale) {
       if (clctor.scale < 2) {
-        clctor.scale += clcted.scale / 20 / clctor.scale
+        clctor.scale += clcted.scale / 80 / clctor.scale
       }
       if (clcted.scale <= clctor.scale / 15 * clctor.scale) {
         clcted.scale -= clctor.scale / 15 * clctor.scale
@@ -129,20 +145,35 @@ const sketch = (p) => {
         clctor.scale -= clcted.scale / 15 * clcted.scale
       }
       if (clcted.scale < 2) {
-        clcted.scale += clctor.scale / 20 / clcted.scale
+        clcted.scale += clctor.scale / 80 / clcted.scale
       }
+    }
+  }
+
+  let eateach = (clctor, clcted) => {
+    if (clcted.scale <= clctor.scale / 5) {
+      clcted.scale -= clctor.scale / 5
+      clcted.remove()
+    } else {
+      clcted.scale -= clctor.scale / 5
+    }
+    if (clctor.scale <= clcted.scale / 5) {
+      clctor.scale -= clcted.scale / 5
+      clctor.remove()
+    } else {
+      clctor.scale -= clcted.scale / 5
     }
   }
   //太阳引力
   let gravityEffect = (clctor, clcted) => {
-    clctor.velocity.x += (clcted.position.x - clctor.position.x) / 5000 * clcted.scale
-    clctor.velocity.y += (clcted.position.y - clctor.position.y) / 5000 * clcted.scale
+    clctor.velocity.x += (clcted.position.x - clctor.position.x) / 8000 * clcted.scale
+    clctor.velocity.y += (clcted.position.y - clctor.position.y) / 8000 * clcted.scale
   }
 
   p.draw = () => {
     p.background(255, 255, 255)
 
-    if (p.random(0, 100) <= 15) {
+    if (p.random(0, 100) <= 20) {
       let circle = p.createSprite(p.random(0, p.width), p.random(0, p.height))
       circle.addAnimation('normal', 'assets/asterisk_circle0006.png', 'assets/asterisk_circle0008.png')
       circle.setCollider('circle', -2, 2, 55)
@@ -154,7 +185,11 @@ const sketch = (p) => {
     }
     circles.overlap(circles, bigEatSmall)
     circles.bounce(boxes)
-    hero.overlap(bubblys)
+    // hero.overlap(bubblys, (clctor, clcted) => {
+    //   clcted.rotation === 90
+    //     ? hero.position.x += 200 / p.abs(hero.position.x / 5 - clcted.position.x / 5 + 15)
+    //     : hero.position.y -= 200 / p.abs(hero.position.y / 5 - clcted.position.y / 5 + 15)
+    // })
     circles.overlap(bubblys, (clctor, clcted) => {
       clcted.rotation === 90
         ? clctor.velocity.x += 0.6
@@ -175,6 +210,16 @@ const sketch = (p) => {
     hero.overlap(circles, bigEatSmall)
     suns.overlap(suns, bigEatSmall)
     suns.overlap(gravities, gravityEffect)
+    holes.overlap(holes, bigEatSmall)
+    holes.bounce(boxes)
+    holes.overlap(bubblys, (clctor, clcted) => {
+      clcted.rotation === 90
+        ? clctor.velocity.x += 0.6
+        : clctor.velocity.y -= 0.6
+    })
+    circles.overlap(holes, eateach)
+    hero.overlap(holes, eateach)
+    holes.overlap(gravities, gravityEffect)
     for (var i = 0; i < allSprites.length; i++) {
       var s = allSprites[i]
       if (s.position.x < 0) {
@@ -196,8 +241,8 @@ const sketch = (p) => {
         s.position.y = SCENEH - 1
         s.velocity.y = -p.abs(s.velocity.y)
       }
-      s.velocity.x /= 1.001
-      s.velocity.y /= 1.001
+      s.velocity.x /= 1.005
+      s.velocity.y /= 1.005
     }
     p.camera.position.x = hero.position.x
     p.camera.position.y = hero.position.y
