@@ -4,7 +4,7 @@
 
 ## 在线展示
 
-<https://domonji.github.io/eatsmaller>
+<https://domon.me/eatsmaller>
 
 ## 游戏截图
 
